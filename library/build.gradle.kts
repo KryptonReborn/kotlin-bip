@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-    namespace = "kmp.template"
+    namespace = "dev.kryptonreborn.bip"
 }
 
 kotlin {
@@ -11,8 +11,19 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation(libs.kotlinStdLib)
-                implementation(libs.kotlinSerializationJson)
-                implementation(libs.kotlinSerializationCbor)
+                implementation(libs.krypto)
+            }
+        }
+        val commonTest by getting {
+            dependencies {
+                implementation(libs.kotestFrameworkEngine)
+                implementation(libs.kotestAssertion)
+                implementation(libs.kotestProperty)
+            }
+        }
+        val jvmTest by getting {
+            dependencies {
+                implementation(libs.kotestRunnerJunit5)
             }
         }
     }

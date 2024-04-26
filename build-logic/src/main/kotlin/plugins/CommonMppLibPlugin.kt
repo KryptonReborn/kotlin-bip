@@ -31,7 +31,11 @@ class CommonMppLibPlugin : Plugin<Project> {
                     HostOs.MAC -> macosX64("native")
                     HostOs.WINDOWS -> mingwX64("native")
                 }
-                jvm()
+                jvm {
+                    testRuns["test"].executionTask.configure {
+                        useJUnitPlatform()
+                    }
+                }
                 js().apply {
                     compilations.apply {
                         nodejs()
@@ -45,11 +49,12 @@ class CommonMppLibPlugin : Plugin<Project> {
                     }
                 }
 
-                @OptIn(ExperimentalWasmDsl::class)
-                wasmJs {
-                    browser()
-                    binaries.executable()
-                }
+// Kotest does not support Wasm: https://kotest.io/docs/quickstart/
+//                @OptIn(ExperimentalWasmDsl::class)
+//                wasmJs {
+//                    browser()
+//                    binaries.executable()
+//                }
                 androidTarget {
                     publishLibraryVariants("release")
                     compilations.all {
@@ -82,9 +87,11 @@ class CommonMppLibPlugin : Plugin<Project> {
 
     private fun getHostOsName(): HostOs {
         val target = System.getProperty("os.name")
-        if (target == "Linux") return HostOs.LINUX
-        if (target.startsWith("Windows")) return HostOs.WINDOWS
-        if (target.startsWith("Mac")) return HostOs.MAC
-        throw GradleException("Unknown OS: $target")
+        return when {
+            target == "Linux" -> HostOs.LINUX
+            target.startsWith("Windows") -> HostOs.WINDOWS
+            target.startsWith("Mac") -> HostOs.MAC
+            else -> throw GradleException("Unknown OS: $target")
+        }
     }
 }
