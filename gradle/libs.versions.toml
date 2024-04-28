@@ -3,8 +3,9 @@ agp = "8.1.4"
 kotlin = "1.9.22"
 androidMinSdk = "24"
 androidCompileSdk = "33"
+kotlinxSerialization = "1.6.3"
+kotlinTestingResource = "0.4.1"
 korge = "4.0.10"
-kotest = "5.8.1"
 
 [libraries]
 kotlinGradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
@@ -13,15 +14,15 @@ androidGradlePlugin = { group = "com.android.tools.build", name = "gradle", vers
 # Common
 kotlinStdLib = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin" }
 kotlinTest = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
+kotlinxSerializationJson = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
+kotlinTestingResource = { module = "com.goncalossilva:resources", version.ref = "kotlinTestingResource" }
 krypto = { module = "com.soywiz.korlibs.krypto:krypto", version.ref = "korge" }
-kotestFrameworkEngine = { module = "io.kotest:kotest-framework-engine", version.ref = "kotest" }
-kotestAssertion = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
-kotestProperty = { module = "io.kotest:kotest-property", version.ref = "kotest" }
-kotestRunnerJunit5 = { module = "io.kotest:kotest-runner-junit5-jvm", version.ref = "kotest" }
 
 [plugins]
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+kotlinPluginSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+kotlinTestingResource = { id = "com.goncalossilva.resources", version.ref = "kotlinTestingResource" }
 
 # Plugins defined by this project
 commonMppLib = { id = "common.mpp.lib", version = "unspecified" }

@@ -31,8 +31,7 @@ enum class WordCount(val count: Int) {
         }
     }
 
-    fun toEntropy(): ByteArray =
-        ByteArray(bitLength / 8).apply {
-            SecureRandom.nextBytes(this)
-        }
+    fun toEntropy(): ByteArray = ByteArray(bitLength / 8).apply {
+        SecureRandom.nextBytes(this)
+    }
 }

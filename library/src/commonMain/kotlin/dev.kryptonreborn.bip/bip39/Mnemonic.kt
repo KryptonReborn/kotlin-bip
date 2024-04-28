@@ -9,21 +9,23 @@ import kotlin.experimental.or
  * Encompasses all mnemonic functionality, which helps keep everything concise and in one place.
  */
 @OptIn(ExperimentalStdlibApi::class)
-class Mnemonic(val chars: CharArray, private val languageCode: String = DEFAULT_LANGUAGE_CODE) :
-    AutoCloseable, Iterable<String> {
+class Mnemonic(
+    val chars: CharArray,
+    private val languageCode: String = DEFAULT_LANGUAGE_CODE,
+) : AutoCloseable, Iterable<String> {
     constructor(
         phrase: String,
-        languageCode: String = DEFAULT_LANGUAGE_CODE
+        languageCode: String = DEFAULT_LANGUAGE_CODE,
     ) : this(phrase.toCharArray(), languageCode)
 
     constructor(
         entropy: ByteArray,
-        languageCode: String = DEFAULT_LANGUAGE_CODE
+        languageCode: String = DEFAULT_LANGUAGE_CODE,
     ) : this(computeSentence(entropy), languageCode)
 
     constructor(
         wordCount: WordCount,
-        languageCode: String = DEFAULT_LANGUAGE_CODE
+        languageCode: String = DEFAULT_LANGUAGE_CODE,
     ) : this(computeSentence(wordCount.toEntropy()), languageCode)
 
     val wordCount get() = chars.count { it == ' ' }.let { if (it == 0) it else it + 1 }
@@ -34,16 +36,15 @@ class Mnemonic(val chars: CharArray, private val languageCode: String = DEFAULT_
      * chars can be enough.
      */
     val words: List<CharArray>
-        get() =
-            ArrayList<CharArray>(wordCount).apply {
-                var cursor = 0
-                chars.forEachIndexed { i, c ->
-                    if (c == ' ' || i == chars.lastIndex) {
-                        add(chars.copyOfRange(cursor, if (chars[i].isWhitespace()) i else i + 1))
-                        cursor = i + 1
-                    }
+        get() = ArrayList<CharArray>(wordCount).apply {
+            var cursor = 0
+            chars.forEachIndexed { i, c ->
+                if (c == ' ' || i == chars.lastIndex) {
+                    add(chars.copyOfRange(cursor, if (chars[i].isWhitespace()) i else i + 1))
+                    cursor = i + 1
                 }
             }
+        }
 
     companion object {
         const val DEFAULT_PASSPHRASE = "mnemonic"
@@ -79,7 +80,7 @@ class Mnemonic(val chars: CharArray, private val languageCode: String = DEFAULT_
          */
         private fun computeSentence(
             entropy: ByteArray,
-            languageCode: String = DEFAULT_LANGUAGE_CODE
+            languageCode: String = DEFAULT_LANGUAGE_CODE,
         ): CharArray {
             // initialize state
             var index = 0
@@ -90,7 +91,7 @@ class Mnemonic(val chars: CharArray, private val languageCode: String = DEFAULT_
             // Note: the excess bits of the checksum are intentionally ignored, per BIP-39
             fun processBit(
                 bit: Boolean,
-                chars: ArrayList<Char>
+                chars: ArrayList<Char>,
             ) {
                 // update the index
                 index = index shl 1
@@ -123,27 +124,26 @@ class Mnemonic(val chars: CharArray, private val languageCode: String = DEFAULT_
 
     override fun close() = clear()
 
-    override fun iterator(): Iterator<String> =
-        object : Iterator<String> {
-            var cursor: Int = 0
+    override fun iterator(): Iterator<String> = object : Iterator<String> {
+        var cursor: Int = 0
 
-            override fun hasNext() = cursor < chars.size - 1
+        override fun hasNext() = cursor < chars.size - 1
 
-            override fun next(): String {
-                val nextSpaceIndex = nextSpaceIndex()
-                val word = chars.concatToString(cursor, cursor + (nextSpaceIndex - cursor))
-                cursor = nextSpaceIndex + 1
-                return word
-            }
-
-            private fun nextSpaceIndex(): Int {
-                var i = cursor
-                while (i < chars.size - 1) {
-                    if (chars[i].isWhitespace()) return i else i++
-                }
-                return chars.size
-            }
+        override fun next(): String {
+            val nextSpaceIndex = nextSpaceIndex()
+            val word = chars.concatToString(cursor, cursor + (nextSpaceIndex - cursor))
+            cursor = nextSpaceIndex + 1
+            return word
         }
+
+        private fun nextSpaceIndex(): Int {
+            var i = cursor
+            while (i < chars.size - 1) {
+                if (chars[i].isWhitespace()) return i else i++
+            }
+            return chars.size
+        }
+    }
 
     fun clear() = chars.fill(0.toChar())
 
@@ -258,7 +258,7 @@ class Mnemonic(val chars: CharArray, private val languageCode: String = DEFAULT_
     fun toSeed(
         // expect: UTF-8 normalized with NFKD
         passphrase: CharArray = charArrayOf(),
-        validate: Boolean = true
+        validate: Boolean = true,
     ): ByteArray {
         // we can skip validation when we know for sure that the code is valid
         // such as when it was just generated from new/correct entropy (common case for new seeds)

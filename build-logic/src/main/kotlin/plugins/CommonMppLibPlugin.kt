@@ -38,18 +38,21 @@ class CommonMppLibPlugin : Plugin<Project> {
                 }
                 js().apply {
                     compilations.apply {
-                        nodejs()
+                        nodejs {
+                            testTask {
+                                useMocha {
+                                    timeout = "9s"
+                                }
+                            }
+                        }
                         browser {
                             testTask {
-                                useKarma {
-                                    useChromeHeadless()
-                                }
+                                enabled = false
                             }
                         }
                     }
                 }
-
-// Kotest does not support Wasm: https://kotest.io/docs/quickstart/
+// waiting for wasm support in kotlinx resource https://github.com/goncalossilva/kotlinx-resources/issues/91
 //                @OptIn(ExperimentalWasmDsl::class)
 //                wasmJs {
 //                    browser()

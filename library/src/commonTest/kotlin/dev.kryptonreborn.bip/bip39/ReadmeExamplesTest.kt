@@ -1,106 +1,95 @@
 package dev.kryptonreborn.bip.bip39
 
-import io.kotest.assertions.throwables.shouldNotThrowAny
-import io.kotest.core.spec.style.ShouldSpec
-import io.kotest.matchers.shouldBe
-import io.kotest.matchers.string.shouldContain
+import kotlin.test.Test
+import kotlin.test.assertContains
+import kotlin.test.assertEquals
 
 @OptIn(ExperimentalStdlibApi::class)
-class ReadmeExamplesTest : ShouldSpec({
-    val validPhrase =
-        "still champion voice habit trend flight survey between bitter process artefact blind carbon truly provide dizzy crush flush breeze blouse charge solid fish spread"
-    context("Example: Create 24-word mnemonic phrase") {
-        val mnemonic = Mnemonic(WordCount.COUNT_24)
-        should("result in a valid 24-word phrase") {
-            mnemonic.wordCount shouldBe 24
-        }
-        should("result in a valid phrase") {
-            shouldNotThrowAny {
-                mnemonic.validate()
-            }
-        }
-    }
-    context("Example: Generate seed") {
-        val mnemonic = Mnemonic(WordCount.COUNT_24)
-        should("result in a valid 24-word phrase") {
-            mnemonic.toSeed()
-            mnemonic.wordCount shouldBe 24
-        }
-        should("result in a valid phrase") {
-            shouldNotThrowAny {
-                mnemonic.validate()
-            }
-        }
-    }
-    context("Example: Generate seed from existing mnemonic chars") {
-        val mnemonic = Mnemonic(validPhrase.toCharArray())
-        should("result in a valid 24-word phrase") {
-            mnemonic.toSeed()
-            mnemonic.wordCount shouldBe 24
-        }
-        should("result in a valid phrase") {
-            shouldNotThrowAny {
-                mnemonic.validate()
-            }
-        }
-    }
-    context("Example: Generate seed from existing mnemonic string") {
-        val mnemonic = Mnemonic(validPhrase)
-        should("result in a valid 24-word phrase") {
-            mnemonic.toSeed()
-            mnemonic.wordCount shouldBe 24
-        }
-        should("result in a valid phrase") {
-            shouldNotThrowAny {
-                mnemonic.validate()
-            }
-        }
-    }
-    context("Example: Generate seed with passphrase") {
-        val passphrase = "bitcoin".toCharArray()
-        should("'normal way' results in a 64 byte seed") {
-            val seed = Mnemonic(validPhrase).toSeed(passphrase)
-            seed.size shouldBe 64
-        }
-        should("'private way' results in a 64 byte seed") {
-            var seed: ByteArray
-            charArrayOf('z', 'c', 'a', 's', 'h').let { passphrase ->
-                seed = Mnemonic(validPhrase).toSeed(passphrase)
-                passphrase.concatToString() shouldBe "zcash"
-                passphrase.fill('0')
-                passphrase.concatToString() shouldBe "00000"
-            }
-            seed.size shouldBe 64
-        }
-    }
-    context("Example: Iterate over mnemonic codes") {
-        val mnemonic = Mnemonic(validPhrase)
-        should("work in a for loop") {
-            var count = 0
-            for (word in mnemonic) {
-                count++
-                validPhrase shouldContain word
-            }
-            count shouldBe 24
-        }
-        should("work with forEach") {
-            var count = 0
-            mnemonic.forEach { word ->
-                count++
-                validPhrase shouldContain word
-            }
-            count shouldBe 24
-        }
-    }
-    context("Example: auto-clear") {
-        should("clear the mnemonic when done") {
-            val mnemonic = Mnemonic(WordCount.COUNT_24)
-            mnemonic.use {
-                mnemonic.wordCount shouldBe 24
-            }
+class ReadmeExamplesTest {
+    private val validPhrase = "still champion voice habit trend flight survey between bitter process artefact blind" +
+            " carbon truly provide dizzy crush flush breeze blouse charge solid fish spread"
 
-            // content gets automatically cleared after use!
-            mnemonic.wordCount shouldBe 0
-        }
+    @Test
+    fun testCreateMnemonicPhrase() {
+        val mnemonic = Mnemonic(WordCount.COUNT_24)
+        assertEquals(24, mnemonic.wordCount)
+        assertEquals(Unit, mnemonic.validate())
     }
-})
+
+    @Test
+    fun testGenerateSeed() {
+        val mnemonic = Mnemonic(WordCount.COUNT_24)
+        val seed = mnemonic.toSeed()
+        assertEquals(24, mnemonic.wordCount)
+        assertEquals(Unit, mnemonic.validate())
+        assertEquals(64, seed.size)
+    }
+
+    @Test
+    fun testGenerateSeedFromExistingMnemonicChars() {
+        val mnemonic = Mnemonic(validPhrase.toCharArray())
+        val seed = mnemonic.toSeed()
+        assertEquals(24, mnemonic.wordCount)
+        assertEquals(Unit, mnemonic.validate())
+        assertEquals(64, seed.size)
+    }
+
+    @Test
+    fun testGenerateSeedFromExistingMnemonicString() {
+        val mnemonic = Mnemonic(validPhrase)
+        val seed = mnemonic.toSeed()
+        assertEquals(24, mnemonic.wordCount)
+        assertEquals(Unit, mnemonic.validate())
+        assertEquals(64, seed.size)
+    }
+
+    @Test
+    fun testGenerateSeedWithPassphraseNormalWay() {
+        val passphrase = "bitcoin".toCharArray()
+        val seed = Mnemonic(validPhrase).toSeed(passphrase)
+        assertEquals(64, seed.size)
+    }
+
+    @Test
+    fun testGenerateSeedWithPassphrasePrivateWay() {
+        var seed: ByteArray
+        charArrayOf('z', 'c', 'a', 's', 'h').let { passphrase ->
+            seed = Mnemonic(validPhrase).toSeed(passphrase)
+            assertEquals("zcash", passphrase.concatToString())
+            passphrase.fill('0')
+            assertEquals("00000", passphrase.concatToString())
+        }
+        assertEquals(64, seed.size)
+    }
+
+    @Test
+    fun testIterateMnemonicWithForLoop() {
+        val mnemonic = Mnemonic(validPhrase)
+        var count = 0
+        for (word in mnemonic) {
+            count++
+            assertContains(validPhrase, word)
+        }
+        assertEquals(24, count)
+    }
+
+    @Test
+    fun testIterateMnemonicWithForEach() {
+        val mnemonic = Mnemonic(validPhrase)
+        var count = 0
+        mnemonic.forEach { word ->
+            count++
+            assertContains(validPhrase, word)
+        }
+        assertEquals(24, count)
+    }
+
+    @Test
+    fun testAutoClear() {
+        val mnemonic = Mnemonic(WordCount.COUNT_24)
+        mnemonic.use {
+            assertEquals(24, mnemonic.wordCount)
+        }
+        assertEquals(0, mnemonic.wordCount)
+    }
+}

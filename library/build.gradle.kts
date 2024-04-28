@@ -1,5 +1,7 @@
 plugins {
     id(libs.plugins.commonMppLib.get().pluginId)
+    id(libs.plugins.kotlinPluginSerialization.get().pluginId)
+    id(libs.plugins.kotlinTestingResource.get().pluginId)
 }
 
 android {
@@ -16,14 +18,8 @@ kotlin {
         }
         val commonTest by getting {
             dependencies {
-                implementation(libs.kotestFrameworkEngine)
-                implementation(libs.kotestAssertion)
-                implementation(libs.kotestProperty)
-            }
-        }
-        val jvmTest by getting {
-            dependencies {
-                implementation(libs.kotestRunnerJunit5)
+                implementation(libs.kotlinxSerializationJson)
+                implementation(libs.kotlinTestingResource)
             }
         }
     }
