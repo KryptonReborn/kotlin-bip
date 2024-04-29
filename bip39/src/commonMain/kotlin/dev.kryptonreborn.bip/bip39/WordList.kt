@@ -1,8 +1,5 @@
 package dev.kryptonreborn.bip.bip39
 
-import dev.kryptonreborn.bip.bip39.Mnemonic.Companion.DEFAULT_LANGUAGE_CODE
-
-
 /**
  * A Cached list of words. This serves as an abstraction, allowing collaborators to be agnostic
  * about the source of words. Right now, words are kept in memory since only english is supported
@@ -24,6 +21,7 @@ class WordList internal constructor(val languageCode: String = DEFAULT_LANGUAGE_
     val words get() = _words
 
     companion object {
+        const val DEFAULT_LANGUAGE_CODE = "en"
         private const val WORD_LIST_ELEMENT_COUNT = 2048
 
         /**

@@ -1,6 +1,6 @@
 package dev.kryptonreborn.bip.bip39
 
-import korlibs.crypto.SecureRandom
+import org.kotlincrypto.SecureRandom
 
 /**
  * The supported word counts that can be used for creating entropy.
@@ -32,6 +32,6 @@ enum class WordCount(val count: Int) {
     }
 
     fun toEntropy(): ByteArray = ByteArray(bitLength / 8).apply {
-        SecureRandom.nextBytes(this)
+        SecureRandom().nextBytesCopyTo(this)
     }
 }

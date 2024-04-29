@@ -5,7 +5,8 @@ androidMinSdk = "24"
 androidCompileSdk = "33"
 kotlinxSerialization = "1.6.3"
 kotlinTestingResource = "0.4.1"
-korge = "4.0.10"
+secureRandom = "0.3.1"
+kotlinCrypto = "0.5.1"
 
 [libraries]
 kotlinGradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
@@ -16,7 +17,9 @@ kotlinStdLib = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref
 kotlinTest = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlinxSerializationJson = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
 kotlinTestingResource = { module = "com.goncalossilva:resources", version.ref = "kotlinTestingResource" }
-krypto = { module = "com.soywiz.korlibs.krypto:krypto", version.ref = "korge" }
+secureRandom = { module = "org.kotlincrypto:secure-random", version.ref = "secureRandom" }
+kotlinCryptoHash = { module = "org.kotlincrypto.hash:sha2", version.ref = "kotlinCrypto" }
+kotlinCryptoMac = { module = "org.kotlincrypto.macs:hmac-sha2", version.ref = "kotlinCrypto" }
 
 [plugins]
 androidLibrary = { id = "com.android.library", version.ref = "agp" }

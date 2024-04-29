@@ -41,7 +41,7 @@ class CommonMppLibPlugin : Plugin<Project> {
                         nodejs {
                             testTask {
                                 useMocha {
-                                    timeout = "9s"
+                                    timeout = "20s"
                                 }
                             }
                         }

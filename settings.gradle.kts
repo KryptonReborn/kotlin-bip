@@ -16,4 +16,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "bip"
 
-include(":library")
+include(":bip39")

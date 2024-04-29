@@ -1,14 +1,14 @@
 package dev.kryptonreborn.bip.bip39
 
 import dev.kryptonreborn.bip.bip39.MnemonicException.*
-import korlibs.crypto.PBKDF2
-import korlibs.crypto.SHA256
+import dev.kryptonreborn.bip.bip39.WordList.Companion.DEFAULT_LANGUAGE_CODE
+import org.kotlincrypto.hash.sha2.SHA256
 import kotlin.experimental.or
 
 /**
  * Encompasses all mnemonic functionality, which helps keep everything concise and in one place.
  */
-@OptIn(ExperimentalStdlibApi::class)
+@OptIn(ExperimentalStdlibApi::class)    
 class Mnemonic(
     val chars: CharArray,
     private val languageCode: String = DEFAULT_LANGUAGE_CODE,
@@ -32,7 +32,7 @@ class Mnemonic(
 
     /**
      * Converts the [chars] array into a list of CharArrays for each word. This library does not
-     * use this value but it exposes it as a convenience. In most cases, just working with the
+     * use this value, but it exposes it as a convenience. In most cases, just working with the
      * chars can be enough.
      */
     val words: List<CharArray>
@@ -50,7 +50,6 @@ class Mnemonic(
         const val DEFAULT_PASSPHRASE = "mnemonic"
         const val ITERATION_COUNT = 2048
         const val KEY_SIZE = 512
-        const val DEFAULT_LANGUAGE_CODE = "en"
 
         @Suppress("VARIABLE_IN_SINGLETON_WITHOUT_THREAD_LOCAL")
         private var cachedList = WordList()
@@ -106,7 +105,7 @@ class Mnemonic(
             }
 
             // Compute the first byte of the checksum by SHA256(entropy)
-            val checksum = SHA256.digest(entropy).bytes[0]
+            val checksum = SHA256().digest(entropy)[0]
             return (entropy + checksum).toBits().let { bits ->
                 // initial size of max char count, to minimize array copies (size * 3/32 * 8)
                 ArrayList<Char>(entropy.size * 3 / 4).also { chars ->
@@ -152,7 +151,7 @@ class Mnemonic(
     fun validate() {
         // verify: word count is supported
         wordCount.let { wordCount ->
-            if (WordCount.values().none { it.count == wordCount }) {
+            if (WordCount.entries.toTypedArray().none { it.count == wordCount }) {
                 throw WordCountException(wordCount)
             }
         }
@@ -162,7 +161,7 @@ class Mnemonic(
         var nextLetter = 0
         chars.forEachIndexed { i, c ->
             // filter down, by character, ensuring that there are always matching words.
-            // per BIP39, we could stop checking each word after 4 chars but we check them all,
+            // per BIP39, we could stop checking each word after 4 chars, but we check them all,
             // for completeness
             if (c == ' ') {
                 sublist = getCachedWords(languageCode)
@@ -226,7 +225,7 @@ class Mnemonic(
         }
 
         // Check each required checksum bit, against the first byte of the sha256 of entropy
-        SHA256.digest(entropy).bytes[0].toBits().let { hashFirstByteBits ->
+        SHA256().digest(entropy)[0].toBits().let { hashFirstByteBits ->
             repeat(checksumLengthBits) { i ->
                 // failure means that each word was valid BUT they were in the wrong order
                 if (hashFirstByteBits[i] != checksumBits[i]) throw ChecksumException()
@@ -252,7 +251,7 @@ class Mnemonic(
      * important when additional language support is added.
      * @param validate true to validate the mnemonic before attempting to generate the seed. This
      * can add a bit of extra time to the calculation and is mainly only necessary when the seed is
-     * provided by user input. Meaning, in most cases, this can be false but we default to `true` to
+     * provided by user input. Meaning, in most cases, this can be false, but we default to `true` to
      * be "safe by default."
      */
     fun toSeed(
@@ -264,7 +263,7 @@ class Mnemonic(
         // such as when it was just generated from new/correct entropy (common case for new seeds)
         if (validate) validate()
         return (DEFAULT_PASSPHRASE.toCharArray() + passphrase).toBytes().let { salt ->
-            PBKDF2.pbkdf2WithHmacSHA512(chars.toBytes(), salt, ITERATION_COUNT, KEY_SIZE).bytes
+            PBKDF2.pbkdf2WithHmacSHA512(chars.toBytes(), salt, ITERATION_COUNT, KEY_SIZE)
         }
     }
 

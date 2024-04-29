@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "dev.kryptonreborn.bip"
+    namespace = "dev.kryptonreborn.bip39"
 }
 
 kotlin {
@@ -13,7 +13,9 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation(libs.kotlinStdLib)
-                implementation(libs.krypto)
+                implementation(libs.secureRandom)
+                implementation(libs.kotlinCryptoHash)
+                implementation(libs.kotlinCryptoMac)
             }
         }
         val commonTest by getting {
