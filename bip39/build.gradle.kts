@@ -1,7 +1,5 @@
 plugins {
     id(libs.plugins.commonMppLib.get().pluginId)
-    id(libs.plugins.kotlinPluginSerialization.get().pluginId)
-    id(libs.plugins.kotlinTestingResource.get().pluginId)
 }
 
 android {
@@ -15,13 +13,6 @@ kotlin {
                 implementation(libs.kotlinStdLib)
                 implementation(libs.secureRandom)
                 implementation(libs.kotlinCryptoHash)
-                implementation(libs.kotlinCryptoMac)
-            }
-        }
-        val commonTest by getting {
-            dependencies {
-                implementation(libs.kotlinxSerializationJson)
-                implementation(libs.kotlinTestingResource)
             }
         }
     }

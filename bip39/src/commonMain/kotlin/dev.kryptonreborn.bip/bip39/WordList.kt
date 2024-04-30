@@ -1,5 +1,7 @@
 package dev.kryptonreborn.bip.bip39
 
+import org.kotlincrypto.hash.sha2.SHA256
+
 /**
  * A Cached list of words. This serves as an abstraction, allowing collaborators to be agnostic
  * about the source of words. Right now, words are kept in memory since only english is supported
@@ -24,16 +26,87 @@ class WordList internal constructor(val languageCode: String = DEFAULT_LANGUAGE_
         const val DEFAULT_LANGUAGE_CODE = "en"
         private const val WORD_LIST_ELEMENT_COUNT = 2048
 
+        @Suppress("VARIABLE_IN_SINGLETON_WITHOUT_THREAD_LOCAL")
+        private var cachedList = WordList()
+
+        internal fun getCachedWords(languageCode: String): List<String> {
+            if (cachedList.languageCode != languageCode) {
+                cachedList = WordList(languageCode)
+            }
+            return cachedList.words
+        }
+
+
+        /**
+         * Utility function to create a mnemonic code as a character array from the given
+         * entropy. Typically, new mnemonic codes are created starting with a WordCount
+         * instance, rather than entropy, to ensure that the entropy has been created correctly.
+         * This function is more useful during testing, when you want to validate that known
+         * input produces known output.
+         *
+         * @param entropy the entropy to use for creating the mnemonic code. Typically, this
+         * value is created via WordCount.toEntropy.
+         * @param languageCode the language code to use. Typically, `en`.
+         *
+         * @return an array of characters for the mnemonic code that corresponds to the given
+         * entropy.
+         *
+         * @see WordCount.toEntropy
+         */
+        internal fun computeSentence(
+            entropy: ByteArray,
+            languageCode: String = DEFAULT_LANGUAGE_CODE,
+        ): CharArray {
+            // initialize state
+            var index = 0
+            var bitsProcessed = 0
+            val words = getCachedWords(languageCode)
+
+            // inner function that updates the index and copies a word after every 11 bits
+            // Note: the excess bits of the checksum are intentionally ignored, per BIP-39
+            fun processBit(
+                bit: Boolean,
+                chars: ArrayList<Char>,
+            ) {
+                // update the index
+                index = index shl 1
+                if (bit) index = index or 1
+                // if we're at a word boundary
+                if ((++bitsProcessed).rem(11) == 0) {
+                    // copy over the word and restart the index
+                    words[index].forEach { chars.add(it) }
+                    chars.add(' ')
+                    index = 0
+                }
+            }
+
+            // Compute the first byte of the checksum by SHA256(entropy)
+            val checksum = SHA256().digest(entropy)[0]
+            return (entropy + checksum).toBits().let { bits ->
+                // initial size of max char count, to minimize array copies (size * 3/32 * 8)
+                ArrayList<Char>(entropy.size * 3 / 4).also { chars ->
+                    bits.forEach { processBit(it, chars) }
+                    // trim final space to avoid the need to track the number of words completed
+                    chars.removeAt(chars.lastIndex)
+                }.let { result ->
+                    // returning the result as a charArray creates a copy so clear the original
+                    // so that it doesn't sit in memory until garbage collection
+                    result.toCharArray().also { result.clear() }
+                }
+            }
+        }
+
         /**
          * Returns true when the given language code (like "en") is supported. Currently, only
          * English is supported but this will change in future versions.
          */
-        private fun isSupported(languageCode: String): Boolean = languageCode == DEFAULT_LANGUAGE_CODE
+        private fun isSupported(languageCode: String): Boolean =
+            languageCode == DEFAULT_LANGUAGE_CODE
 
         /**
          * Throws an error when the given language code is not supported.
          */
-        fun validate(languageCode: String) {
+        private fun validate(languageCode: String) {
             if (!isSupported(languageCode)) {
                 throw UnsupportedOperationException("The language <$languageCode> is not currently supported")
             }

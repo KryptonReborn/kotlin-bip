@@ -19,7 +19,6 @@ kotlinxSerializationJson = { module = "org.jetbrains.kotlinx:kotlinx-serializati
 kotlinTestingResource = { module = "com.goncalossilva:resources", version.ref = "kotlinTestingResource" }
 secureRandom = { module = "org.kotlincrypto:secure-random", version.ref = "secureRandom" }
 kotlinCryptoHash = { module = "org.kotlincrypto.hash:sha2", version.ref = "kotlinCrypto" }
-kotlinCryptoMac = { module = "org.kotlincrypto.macs:hmac-sha2", version.ref = "kotlinCrypto" }
 
 [plugins]
 androidLibrary = { id = "com.android.library", version.ref = "agp" }

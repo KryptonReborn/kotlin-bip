@@ -2,13 +2,15 @@ package dev.kryptonreborn.bip.bip39
 
 import dev.kryptonreborn.bip.bip39.MnemonicException.*
 import dev.kryptonreborn.bip.bip39.WordList.Companion.DEFAULT_LANGUAGE_CODE
+import dev.kryptonreborn.bip.bip39.WordList.Companion.computeSentence
+import dev.kryptonreborn.bip.bip39.WordList.Companion.getCachedWords
 import org.kotlincrypto.hash.sha2.SHA256
 import kotlin.experimental.or
 
 /**
  * Encompasses all mnemonic functionality, which helps keep everything concise and in one place.
  */
-@OptIn(ExperimentalStdlibApi::class)    
+@OptIn(ExperimentalStdlibApi::class)
 class Mnemonic(
     val chars: CharArray,
     private val languageCode: String = DEFAULT_LANGUAGE_CODE,
@@ -47,78 +49,9 @@ class Mnemonic(
         }
 
     companion object {
-        const val DEFAULT_PASSPHRASE = "mnemonic"
-        const val ITERATION_COUNT = 2048
-        const val KEY_SIZE = 512
-
-        @Suppress("VARIABLE_IN_SINGLETON_WITHOUT_THREAD_LOCAL")
-        private var cachedList = WordList()
-
-        fun getCachedWords(languageCode: String): List<String> {
-            if (cachedList.languageCode != languageCode) {
-                cachedList = WordList(languageCode)
-            }
-            return cachedList.words
-        }
-
-        /**
-         * Utility function to create a mnemonic code as a character array from the given
-         * entropy. Typically, new mnemonic codes are created starting with a WordCount
-         * instance, rather than entropy, to ensure that the entropy has been created correctly.
-         * This function is more useful during testing, when you want to validate that known
-         * input produces known output.
-         *
-         * @param entropy the entropy to use for creating the mnemonic code. Typically, this
-         * value is created via WordCount.toEntropy.
-         * @param languageCode the language code to use. Typically, `en`.
-         *
-         * @return an array of characters for the mnemonic code that corresponds to the given
-         * entropy.
-         *
-         * @see WordCount.toEntropy
-         */
-        private fun computeSentence(
-            entropy: ByteArray,
-            languageCode: String = DEFAULT_LANGUAGE_CODE,
-        ): CharArray {
-            // initialize state
-            var index = 0
-            var bitsProcessed = 0
-            val words = getCachedWords(languageCode)
-
-            // inner function that updates the index and copies a word after every 11 bits
-            // Note: the excess bits of the checksum are intentionally ignored, per BIP-39
-            fun processBit(
-                bit: Boolean,
-                chars: ArrayList<Char>,
-            ) {
-                // update the index
-                index = index shl 1
-                if (bit) index = index or 1
-                // if we're at a word boundary
-                if ((++bitsProcessed).rem(11) == 0) {
-                    // copy over the word and restart the index
-                    words[index].forEach { chars.add(it) }
-                    chars.add(' ')
-                    index = 0
-                }
-            }
-
-            // Compute the first byte of the checksum by SHA256(entropy)
-            val checksum = SHA256().digest(entropy)[0]
-            return (entropy + checksum).toBits().let { bits ->
-                // initial size of max char count, to minimize array copies (size * 3/32 * 8)
-                ArrayList<Char>(entropy.size * 3 / 4).also { chars ->
-                    bits.forEach { processBit(it, chars) }
-                    // trim final space to avoid the need to track the number of words completed
-                    chars.removeAt(chars.lastIndex)
-                }.let { result ->
-                    // returning the result as a charArray creates a copy so clear the original
-                    // so that it doesn't sit in memory until garbage collection
-                    result.toCharArray().also { result.clear() }
-                }
-            }
-        }
+        private const val DEFAULT_PASSPHRASE = "mnemonic"
+        private const val ITERATION_COUNT = 2048
+        private const val KEY_SIZE = 512
     }
 
     override fun close() = clear()
@@ -274,10 +207,11 @@ class Mnemonic(
     private fun validateChecksum() = toEntropy()
 }
 
-private fun ByteArray.toBits(): List<Boolean> = flatMap { it.toBits() }
+internal fun ByteArray.toBits(): List<Boolean> = flatMap { it.toBits() }
 
-private fun Byte.toBits(): List<Boolean> = (7 downTo 0).map { (toInt() and (1 shl it)) != 0 }
+internal fun Byte.toBits(): List<Boolean> =
+    (7 downTo 0).map { (toInt() and (1 shl it)) != 0 }
 
-private fun CharArray.toBytes(): ByteArray {
+internal fun CharArray.toBytes(): ByteArray {
     return map { it.code.toByte() }.toByteArray()
 }

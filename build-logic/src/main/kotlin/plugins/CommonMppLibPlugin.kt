@@ -13,6 +13,8 @@ class CommonMppLibPlugin : Plugin<Project> {
             with(pluginManager) {
                 apply(libs.findPlugin("androidLibrary").get().get().pluginId)
                 apply(libs.findPlugin("kotlinMultiplatform").get().get().pluginId)
+                apply(libs.findPlugin("kotlinPluginSerialization").get().get().pluginId)
+                apply(libs.findPlugin("kotlinTestingResource").get().get().pluginId)
             }
 
             extensions.configure<LibraryExtension> {
@@ -31,11 +33,7 @@ class CommonMppLibPlugin : Plugin<Project> {
                     HostOs.MAC -> macosX64("native")
                     HostOs.WINDOWS -> mingwX64("native")
                 }
-                jvm {
-                    testRuns["test"].executionTask.configure {
-                        useJUnitPlatform()
-                    }
-                }
+                jvm()
                 js().apply {
                     compilations.apply {
                         nodejs {
@@ -74,6 +72,8 @@ class CommonMppLibPlugin : Plugin<Project> {
                     commonMain.get()
                     commonTest.dependencies {
                         implementation(libs.findLibrary("kotlinTest").get())
+                        implementation(libs.findLibrary("kotlinxSerializationJson").get())
+                        implementation(libs.findLibrary("kotlinTestingResource").get())
                     }
                     nativeMain.get().dependsOn(commonMain.get())
                     nativeTest.get().dependsOn(commonTest.get())

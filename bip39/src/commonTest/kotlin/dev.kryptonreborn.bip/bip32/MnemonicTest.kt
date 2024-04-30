@@ -3,6 +3,7 @@ package dev.kryptonreborn.bip.bip32
 import dev.kryptonreborn.bip.bip39.MnemonicException.*
 import dev.kryptonreborn.bip.bip39.Mnemonic
 import dev.kryptonreborn.bip.bip39.WordCount
+import dev.kryptonreborn.bip.bip39.WordList.Companion.DEFAULT_LANGUAGE_CODE
 import kotlin.test.*
 
 @OptIn(ExperimentalStdlibApi::class)
@@ -86,7 +87,7 @@ class MnemonicTest {
         englishTestData.forEach {
             assertEquals(
                 it.seed,
-                Mnemonic(it.mnemonic, Mnemonic.DEFAULT_LANGUAGE_CODE).toSeed(passphrase)
+                Mnemonic(it.mnemonic, DEFAULT_LANGUAGE_CODE).toSeed(passphrase)
                     .toHexString()
             )
         }
@@ -193,4 +194,3 @@ class MnemonicTest {
         }
     }
 }
-
