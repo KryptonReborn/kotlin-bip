@@ -55,7 +55,12 @@ class CommonMppLibPlugin : Plugin<Project> {
 //                @OptIn(ExperimentalWasmDsl::class)
 //                wasmJs {
 //                    browser()
+//                    nodejs()
 //                    binaries.executable()
+//                }
+//                @OptIn(ExperimentalWasmDsl::class)
+//                wasmWasi {
+//                    nodejs()
 //                }
                 androidTarget {
                     publishLibraryVariants("release")
