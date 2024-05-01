@@ -43,10 +43,11 @@ class CommonMppLibPlugin : Plugin<Project> {
                                 }
                             }
                         }
-// TODO: Temporarily disable the browser test due to 'Read failed: Request Header Fields Too Large'
                         browser {
                             testTask {
-                                enabled = false
+                                useMocha {
+                                    timeout = "20s"
+                                }
                             }
                         }
                     }
