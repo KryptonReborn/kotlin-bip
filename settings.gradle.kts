@@ -17,3 +17,4 @@ dependencyResolutionManagement {
 rootProject.name = "bip"
 
 include(":bip39")
+include(":crypto")

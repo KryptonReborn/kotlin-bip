@@ -3,16 +3,14 @@ plugins {
 }
 
 android {
-    namespace = "dev.kryptonreborn.bip.bip39"
+    namespace = "dev.kryptonreborn.bip.crypto"
 }
 
 kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation(libs.secureRandom)
                 implementation(libs.kotlinCryptoHash)
-                implementation(project(BuildModules.CRYPTO))
             }
         }
     }

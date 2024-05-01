@@ -4,6 +4,7 @@ import dev.kryptonreborn.bip.bip39.MnemonicException.*
 import dev.kryptonreborn.bip.bip39.WordList.Companion.DEFAULT_LANGUAGE_CODE
 import dev.kryptonreborn.bip.bip39.WordList.Companion.computeSentence
 import dev.kryptonreborn.bip.bip39.WordList.Companion.getCachedWords
+import dev.kryptonreborn.bip.crypto.PBKDF2
 import org.kotlincrypto.hash.sha2.SHA256
 import kotlin.experimental.or
 

@@ -1,6 +1,5 @@
-package dev.kryptonreborn.bip.bip32
+package dev.kryptonreborn.bip.crypto
 
-import dev.kryptonreborn.bip.bip39.PBKDF2
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

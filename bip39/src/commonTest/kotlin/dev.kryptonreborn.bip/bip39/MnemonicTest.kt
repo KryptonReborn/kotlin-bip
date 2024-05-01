@@ -1,8 +1,6 @@
-package dev.kryptonreborn.bip.bip32
+package dev.kryptonreborn.bip.bip39
 
 import dev.kryptonreborn.bip.bip39.MnemonicException.*
-import dev.kryptonreborn.bip.bip39.Mnemonic
-import dev.kryptonreborn.bip.bip39.WordCount
 import dev.kryptonreborn.bip.bip39.WordList.Companion.DEFAULT_LANGUAGE_CODE
 import kotlin.test.*
 

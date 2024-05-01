@@ -1,4 +1,4 @@
-package dev.kryptonreborn.bip.bip39
+package dev.kryptonreborn.bip.crypto
 
 import org.kotlincrypto.core.digest.Digest
 import org.kotlincrypto.hash.sha2.SHA512
