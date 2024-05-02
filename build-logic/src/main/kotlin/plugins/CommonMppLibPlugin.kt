@@ -30,8 +30,6 @@ class CommonMppLibPlugin : Plugin<Project> {
                 val hostOs = getHostOsName()
                 println("Host os name $hostOs")
 
-                println(project.group.toString())
-
                 when (hostOs) {
                     HostOs.LINUX -> linuxX64("native")
                     HostOs.MAC -> macosX64("native")
