@@ -6,6 +6,8 @@ import org.gradle.api.*
 import org.gradle.kotlin.dsl.*
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
+import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsSubTargetDsl
+import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsTargetDsl
 
 class CommonMppLibPlugin : Plugin<Project> {
     override fun apply(target: Project) {
@@ -28,36 +30,21 @@ class CommonMppLibPlugin : Plugin<Project> {
                 val hostOs = getHostOsName()
                 println("Host os name $hostOs")
 
+                println(project.group.toString())
+
                 when (hostOs) {
                     HostOs.LINUX -> linuxX64("native")
                     HostOs.MAC -> macosX64("native")
                     HostOs.WINDOWS -> mingwX64("native")
                 }
                 jvm()
-                js().apply {
-                    compilations.apply {
-                        nodejs {
-                            testTask {
-                                useMocha {
-                                    timeout = "20s"
-                                }
-                            }
-                        }
-                        browser {
-                            testTask {
-                                useMocha {
-                                    timeout = "20s"
-                                }
-                            }
-                        }
-                    }
+                js {
+                    configureTargetsForJS()
                 }
 // waiting for wasm support in kotlinx resource https://github.com/goncalossilva/kotlinx-resources/issues/91
 //                @OptIn(ExperimentalWasmDsl::class)
 //                wasmJs {
-//                    browser()
-//                    nodejs()
-//                    binaries.executable()
+//                    configureTargetsForJS()
 //                }
 //                @OptIn(ExperimentalWasmDsl::class)
 //                wasmWasi {
@@ -103,5 +90,23 @@ class CommonMppLibPlugin : Plugin<Project> {
             target.startsWith("Mac") -> HostOs.MAC
             else -> throw GradleException("Unknown OS: $target")
         }
+    }
+
+    private fun KotlinJsSubTargetDsl.configureMochaTimeout() {
+        testTask {
+            useMocha {
+                timeout = "20s"
+            }
+        }
+    }
+
+    private fun KotlinJsTargetDsl.configureTargetsForJS() {
+        browser {
+            configureMochaTimeout()
+        }
+        nodejs {
+            configureMochaTimeout()
+        }
+        binaries.executable()
     }
 }
