@@ -1,0 +1,79 @@
+name: CI and Publish
+
+on:
+  push:
+    branches:
+      - main
+      - releases/*
+  pull_request:
+    branches:
+      - main
+      - releases/*
+
+env:
+  JAVA_VERSION: '17'
+  GRADLE_CACHE_PATH: |
+    ~/.gradle/caches
+    ~/.gradle/wrapper
+  USERNAME_GITHUB: ${{ github.actor }}
+  TOKEN_GITHUB: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+  build-and-test:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache Gradle packages
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.GRADLE_CACHE_PATH }}
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build and Test
+        run: ./gradlew build test --build-cache --gradle-user-home ~/.gradle
+
+  publish:
+    name: Publish Package
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    needs: build-and-test
+    if: startsWith(github.ref, 'refs/heads/releases/')
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache Gradle packages
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.GRADLE_CACHE_PATH }}
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Publish package
+        run: ./gradlew publish

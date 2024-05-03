@@ -24,6 +24,8 @@ androidLibrary = { id = "com.android.library", version.ref = "agp" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlinPluginSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kotlinTestingResource = { id = "com.goncalossilva.resources", version.ref = "kotlinTestingResource" }
+mavenPublish = { id = "maven-publish", version = "unspecified" }
 
 # Plugins defined by this project
 commonMppLib = { id = "common.mpp.lib", version = "unspecified" }
+commonMppPublish = { id = "common.mpp.publish", version = "unspecified" }
