@@ -1,8 +1,8 @@
 [versions]
-agp = "8.1.4"
+agp = "8.3.2"
 kotlin = "1.9.23"
 androidMinSdk = "24"
-androidCompileSdk = "33"
+androidCompileSdk = "34"
 kotlinxSerialization = "1.6.3"
 kotlinTestingResource = "0.4.1"
 secureRandom = "0.3.1"
