@@ -13,5 +13,9 @@ gradlePlugin {
             id = "common.mpp.lib"
             implementationClass = "plugins.CommonMppLibPlugin"
         }
+        register("commonMppPublish") {
+            id = "common.mpp.publish"
+            implementationClass = "plugins.CommonMppPublish"
+        }
     }
 }

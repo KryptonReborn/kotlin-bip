@@ -1,8 +1,8 @@
 [versions]
-agp = "8.1.4"
+agp = "8.3.2"
 kotlin = "1.9.23"
 androidMinSdk = "24"
-androidCompileSdk = "33"
+androidCompileSdk = "34"
 kotlinxSerialization = "1.6.3"
 kotlinTestingResource = "0.4.1"
 secureRandom = "0.3.1"
@@ -24,6 +24,8 @@ androidLibrary = { id = "com.android.library", version.ref = "agp" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlinPluginSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kotlinTestingResource = { id = "com.goncalossilva.resources", version.ref = "kotlinTestingResource" }
+mavenPublish = { id = "maven-publish", version = "unspecified" }
 
 # Plugins defined by this project
 commonMppLib = { id = "common.mpp.lib", version = "unspecified" }
+commonMppPublish = { id = "common.mpp.publish", version = "unspecified" }
