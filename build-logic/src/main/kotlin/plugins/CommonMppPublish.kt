@@ -69,12 +69,6 @@ class CommonMppPublish : Plugin<Project> {
                         }
                     }
                 }
-                configure<KotlinMultiplatformExtension> {
-                    androidTarget {
-                        publishLibraryVariants("release", "debug")
-                        publishLibraryVariantsGroupedByFlavor = true
-                    }
-                }
             }
         }
     }

@@ -9,7 +9,7 @@ plugins {
 
 publishConfig {
     url = "https://maven.pkg.github.com/KryptonReborn/kotlin-bip"
-    groupId = "kotlin-bip"
+    groupId = "dev.kryptonreborn.bip"
     artifactId = "bip39"
 }
 
