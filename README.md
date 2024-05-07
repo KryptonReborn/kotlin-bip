@@ -46,7 +46,7 @@ Add the following dependency to your build.gradle.kts file
 
 ```build.gradle.kts
 dependencies {
-    implementation("[groupId]:[artifact]:[version]")
+    implementation("dev.kryptonreborn.bip:[artifact]:[version]")
 }
 ```
 
@@ -188,5 +188,6 @@ val mnemonic = Mnemonic(WordCount.COUNT_24, languageCode = Locale.ENGLISH.langua
 ```
 
 ## Acknowledgements
+[bip39](https://github.com/KryptonReborn/kotlin-bip/tree/main/bip39) is inspired by [kotlin-bip39](https://github.com/Electric-Coin-Company/kotlin-bip39/tree/main/bip39-lib/src/commonMain/kotlin/cash/z/ecc/android/bip39) by [Electric Coin Company](https://github.com/Electric-Coin-Company)
 
-This library is inspired by [repo](url) by [user](url).
+[bip44](https://github.com/KryptonReborn/kotlin-bip/tree/main/bip44) is inspired by [hdwallet](https://github.com/FigureTechnologies/hdwallet/tree/main/bip44) by [Figure Technologies Inc.](https://github.com/FigureTechnologies)
