@@ -41,7 +41,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build and Test
-        run: ./gradlew build --build-cache --gradle-user-home ~/.gradle
+        run: ./gradlew build --parallel --build-cache --gradle-user-home ~/.gradle
 
   publish:
     name: Publish Package
@@ -73,7 +73,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Publish package
-        run: ./gradlew publish
+        run: ./gradlew publish --parallel
 
   create-release:
     runs-on: ubuntu-latest
