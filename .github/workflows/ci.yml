@@ -19,6 +19,9 @@ jobs:
   build-and-test:
     name: Build and Test
     runs-on: macos-latest
+    strategy:
+      matrix:
+        module: [ bip39, bip44, crypto ]
     steps:
       - uses: actions/checkout@v4
 
@@ -27,8 +30,7 @@ jobs:
         with:
           path: ${{ env.GRADLE_CACHE_PATH }}
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
+          restore-keys: ${{ runner.os }}-gradle-
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -41,7 +43,13 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build and Test
-        run: ./gradlew build --parallel --build-cache --gradle-user-home ~/.gradle
+        run: ./gradlew :${{ matrix.module }}:build --parallel --build-cache --gradle-user-home ~/.gradle
+
+      - name: Archive artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: build-artifacts-${{ matrix.module }}
+          path: ${{ matrix.module }}/build/libs/
 
   publish:
     name: Publish Package
@@ -50,7 +58,9 @@ jobs:
       contents: read
       packages: write
     needs: build-and-test
-    if: startsWith(github.ref, 'refs/tags/v')
+    strategy:
+      matrix:
+        module: [ bip39, bip44, crypto ]
     steps:
       - uses: actions/checkout@v4
 
@@ -59,8 +69,7 @@ jobs:
         with:
           path: ${{ env.GRADLE_CACHE_PATH }}
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
+          restore-keys: ${{ runner.os }}-gradle-
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -69,11 +78,14 @@ jobs:
           distribution: 'temurin'
           cache: gradle
 
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
+      - name: Download build artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: build-artifacts-${{ matrix.module }}
+          path: ${{ matrix.module }}/build/libs/
 
       - name: Publish package
-        run: ./gradlew publish --parallel
+        run: ./gradlew :${{ matrix.module }}:publish --parallel
 
   create-release:
     runs-on: ubuntu-latest
