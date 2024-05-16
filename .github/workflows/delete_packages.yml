@@ -3,34 +3,21 @@ name: Delete All Package Versions
 on:
   push:
     branches:
-      - delete_packages
+      - delete_packages  # Chỉ kích hoạt khi branch delete_packages được push
 
 jobs:
-  delete-all-package-versions:
+  delete-all-packages:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Get packages JSON
-        id: get_packages
+      - name: Delete all specified packages
         run: |
-          JSON_OUTPUT=$(curl -H "Authorization: token ${{ secrets.GH_DESTRUCTION_TOKEN }}" \
-                              -H "Accept: application/vnd.github.v3+json" \
-                              "https://api.github.com/orgs/KryptonReborn/packages?repo_name=kotlin-bip&package_type=maven")
-          echo "$JSON_OUTPUT"
-          PACKAGES_JSON=$(echo "$JSON_OUTPUT" | jq -c '[.[] | select(.name != null) | .name]')
-          echo "::set-output name=packages::$PACKAGES_JSON"
-          echo "Packages extracted: $PACKAGES_JSON"
-      - name: Print packages
-        run: |
-          echo "Packages to be deleted: ${{ steps.get_packages.outputs.packages }}"
-
-      - name: Delete all versions of all packages
-        run: |
-          PACKAGES_JSON=${{ steps.get_packages.outputs.packages }}
+          PACKAGES_JSON='["cbor.library-android","cbor.library-iosarm64","cbor.library-iossimulatorarm64","cbor.library-iosx64","dev.kryptonreborn.cbor.cbor","cbor.library-js","cbor.library-jvm","cbor.library-linuxarm64","cbor.library-linuxx64","cbor.library-macosarm64","cbor.library-macosx64","cbor.library-mingwx64","ed25519.library-android","ed25519.library-iosarm64","ed25519.library-iossimulatorarm64","ed25519.library-iosx64","dev.kryptonreborn.ed25519.ed25519","ed25519.library-js","ed25519.library-jvm","ed25519.library-linuxarm64","ed25519.library-linuxx64","ed25519.library-macosarm64","ed25519.library-macosx64","ed25519.library-mingwx64","bip.crypto-android","bip.bip39-android","bip.crypto-iosarm64","bip.bip44-iosarm64","bip.crypto-iossimulatorarm64","bip.bip39-iosarm64"]'
           PACKAGES=$(echo $PACKAGES_JSON | jq -r '.[]')
           for PACKAGE in $PACKAGES; do
+            echo "Deleting package: $PACKAGE"
             VERSIONS=$(curl -H "Authorization: token ${{ secrets.GH_DESTRUCTION_TOKEN }}" \
                             -H "Accept: application/vnd.github.v3+json" \
                             "https://api.github.com/orgs/KryptonReborn/packages/maven/$PACKAGE/versions" | jq -r '.[] | .id')
