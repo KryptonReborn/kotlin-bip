@@ -1,4 +1,4 @@
-name: Delete All Package Versions
+name: Delete All Packages
 
 on:
   push:
@@ -17,16 +17,10 @@ jobs:
           PACKAGES_JSON='["cbor.library-android","cbor.library-iosarm64","cbor.library-iossimulatorarm64","cbor.library-iosx64","dev.kryptonreborn.cbor.cbor","cbor.library-js","cbor.library-jvm","cbor.library-linuxarm64","cbor.library-linuxx64","cbor.library-macosarm64","cbor.library-macosx64","cbor.library-mingwx64","ed25519.library-android","ed25519.library-iosarm64","ed25519.library-iossimulatorarm64","ed25519.library-iosx64","dev.kryptonreborn.ed25519.ed25519","ed25519.library-js","ed25519.library-jvm","ed25519.library-linuxarm64","ed25519.library-linuxx64","ed25519.library-macosarm64","ed25519.library-macosx64","ed25519.library-mingwx64","bip.crypto-android","bip.bip39-android","bip.crypto-iosarm64","bip.bip44-iosarm64","bip.crypto-iossimulatorarm64","bip.bip39-iosarm64"]'
           PACKAGES=$(echo $PACKAGES_JSON | jq -r '.[]')
           for PACKAGE in $PACKAGES; do
-            echo "Deleting package: $PACKAGE"
-            VERSIONS=$(curl -H "Authorization: token ${{ secrets.GH_DESTRUCTION_TOKEN }}" \
-                            -H "Accept: application/vnd.github.v3+json" \
-                            "https://api.github.com/orgs/KryptonReborn/packages/maven/$PACKAGE/versions" | jq -r '.[] | .id')
-            for VERSION in $VERSIONS; do
-              echo "Deleting version $VERSION of package $PACKAGE"
-              curl -X DELETE -H "Authorization: token ${{ secrets.GH_DESTRUCTION_TOKEN }}" \
-                   -H "Accept: application/vnd.github.v3+json" \
-                   "https://api.github.com/orgs/KryptonReborn/packages/maven/$PACKAGE/versions/$VERSION"
-            done
+            echo "Deleting entire package: $PACKAGE"
+            curl -X DELETE -H "Authorization: token ${{ secrets.GH_DESTRUCTION_TOKEN }}" \
+                 -H "Accept: application/vnd.github.v3+json" \
+                 "https://api.github.com/orgs/KryptonReborn/packages/maven/$PACKAGE"
           done
         env:
           GH_DESTRUCTION_TOKEN: ${{ secrets.GH_DESTRUCTION_TOKEN }}
