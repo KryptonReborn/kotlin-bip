@@ -1,0 +1,45 @@
+name: Delete All Package Versions
+
+on:
+  push:
+    branches:
+      - delete_packages
+
+jobs:
+  delete-all-package-versions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Get packages JSON
+        id: get_packages
+        run: |
+          JSON_OUTPUT=$(curl -H "Authorization: token ${{ secrets.GH_DESTRUCTION_TOKEN }}" \
+                              -H "Accept: application/vnd.github.v3+json" \
+                              "https://api.github.com/orgs/KryptonReborn/packages?repo_name=kotlin-bip&package_type=maven")
+          echo "$JSON_OUTPUT"
+          PACKAGES=$(echo "$JSON_OUTPUT" | jq -r '.[] | select(.name != null) | .name')
+          echo "::set-output name=packages::$PACKAGES"
+          echo "Packages extracted: $PACKAGES"
+
+      - name: Print packages
+        run: |
+          echo "Packages to be deleted: ${{ steps.get_packages.outputs.packages }}"
+
+      - name: Delete all versions of all packages
+        run: |
+          PACKAGES=${{ steps.get_packages.outputs.packages }}
+          for PACKAGE in $PACKAGES; do
+            VERSIONS=$(curl -H "Authorization: token ${{ secrets.GH_DESTRUCTION_TOKEN }}" \
+                            -H "Accept: application/vnd.github.v3+json" \
+                            "https://api.github.com/orgs/KryptonReborn/packages/maven/$PACKAGE/versions" | jq -r '.[] | .id')
+            for VERSION in $VERSIONS; do
+              echo "Deleting version $VERSION of package $PACKAGE"
+              curl -X DELETE -H "Authorization: token ${{ secrets.GH_DESTRUCTION_TOKEN }}" \
+                   -H "Accept: application/vnd.github.v3+json" \
+                   "https://api.github.com/orgs/KryptonReborn/packages/maven/$PACKAGE/versions/$VERSION"
+            done
+          done
+        env:
+          GH_DESTRUCTION_TOKEN: ${{ secrets.GH_DESTRUCTION_TOKEN }}
