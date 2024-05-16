@@ -3,7 +3,7 @@ name: Delete All Packages
 on:
   push:
     branches:
-      - delete_packages  # Chỉ kích hoạt khi branch delete_packages được push
+      - delete_packages
 
 jobs:
   delete-all-packages:
