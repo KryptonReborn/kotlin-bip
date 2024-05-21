@@ -6,8 +6,7 @@ import org.gradle.api.Project
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.kotlin.dsl.configure
-import org.gradle.kotlin.dsl.named
-import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.gradle.kotlin.dsl.withType
 
 open class PublishExtension {
     lateinit var url: String
@@ -37,33 +36,37 @@ class CommonMppPublish : Plugin<Project> {
                             }
                         }
                     }
-                    publications {
-                        named<MavenPublication>("kotlinMultiplatform") {
-                            groupId = publishExtension.groupId
-                            artifactId = publishExtension.artifactId
-                            pom {
-                                name.set(rootProject.name)
-                                description.set(findProperty("publicationDescriptionLibrary") as String)
-                                url.set(findProperty("publicationUrl") as String)
+                    publications.withType<MavenPublication>().forEach { publication ->
+                        val targetName = publication.name.substringAfterLast(":")
+                        val artifactId = if (targetName == "kotlinMultiplatform") {
+                            publishExtension.artifactId
+                        } else {
+                            "${publishExtension.artifactId}-$targetName".lowercase()
+                        }
+                        publication.groupId = publishExtension.groupId
+                        publication.artifactId = artifactId
+                        publication.pom {
+                            name.set(rootProject.name)
+                            description.set(findProperty("publicationDescriptionLibrary") as String)
+                            url.set(findProperty("publicationUrl") as String)
 
-                                licenses {
-                                    license {
-                                        name.set(findProperty("publicationLicenseName") as String)
-                                        url.set(findProperty("publicationLicenseUrl") as String)
-                                    }
+                            licenses {
+                                license {
+                                    name.set(findProperty("publicationLicenseName") as String)
+                                    url.set(findProperty("publicationLicenseUrl") as String)
                                 }
+                            }
 
-                                scm {
-                                    url.set(findProperty("publicationScmUrl") as String)
-                                    connection.set(findProperty("publicationScmConnection") as String)
-                                    developerConnection.set(findProperty("publicationScmDeveloperConnection") as String)
-                                }
+                            scm {
+                                url.set(findProperty("publicationScmUrl") as String)
+                                connection.set(findProperty("publicationScmConnection") as String)
+                                developerConnection.set(findProperty("publicationScmDeveloperConnection") as String)
+                            }
 
-                                developers {
-                                    developer {
-                                        id.set(findProperty("publicationDeveloperId") as String)
-                                        name.set(findProperty("publicationDeveloperName") as String)
-                                    }
+                            developers {
+                                developer {
+                                    id.set(findProperty("publicationDeveloperId") as String)
+                                    name.set(findProperty("publicationDeveloperName") as String)
                                 }
                             }
                         }
