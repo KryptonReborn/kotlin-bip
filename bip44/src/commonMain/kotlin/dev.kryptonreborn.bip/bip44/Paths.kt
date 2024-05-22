@@ -24,10 +24,13 @@ internal fun String.parseBIP44Path(): List<PathElement> {
     }
 }
 
-internal fun List<PathElement>.toPathString() =
-    (listOf("m") + map { it.toString() }).joinToString("/")
+internal fun List<PathElement>.toPathString() = (listOf("m") + map { it.toString() }).joinToString("/")
 
-internal fun buildPathElement(position: Int, number: Int, hardened: Boolean): PathElement =
+internal fun buildPathElement(
+    position: Int,
+    number: Int,
+    hardened: Boolean,
+): PathElement =
     when (position) {
         0 -> PathElement.Purpose(number, hardened)
         1 -> PathElement.CoinType(number, hardened)
@@ -44,7 +47,10 @@ internal fun buildPathElement(position: Int, number: Int, hardened: Boolean): Pa
  * See https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki
  */
 sealed class PathElement(open val number: Int, open val hardened: Boolean) {
-    private fun <R> Boolean.into(t: R, f: R): R = if (this) t else f
+    private fun <R> Boolean.into(
+        t: R,
+        f: R,
+    ): R = if (this) t else f
 
     override fun toString(): String = "$number${hardened.into("'", "")}"
 

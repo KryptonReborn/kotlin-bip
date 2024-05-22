@@ -36,7 +36,6 @@ class WordList internal constructor(val languageCode: String = DEFAULT_LANGUAGE_
             return cachedList.words
         }
 
-
         /**
          * Utility function to create a mnemonic code as a character array from the given
          * entropy. Typically, new mnemonic codes are created starting with a WordCount
@@ -100,8 +99,7 @@ class WordList internal constructor(val languageCode: String = DEFAULT_LANGUAGE_
          * Returns true when the given language code (like "en") is supported. Currently, only
          * English is supported but this will change in future versions.
          */
-        private fun isSupported(languageCode: String): Boolean =
-            languageCode == DEFAULT_LANGUAGE_CODE
+        private fun isSupported(languageCode: String): Boolean = languageCode == DEFAULT_LANGUAGE_CODE
 
         /**
          * Throws an error when the given language code is not supported.

@@ -8,7 +8,7 @@ object PBKDF2 {
         password: ByteArray,
         salt: ByteArray,
         iterationCount: Int,
-        keySizeInBits: Int
+        keySizeInBits: Int,
     ): ByteArray = pbkdf2(password, salt, iterationCount, keySizeInBits, SHA512())
 
     private fun pbkdf2(
@@ -16,7 +16,7 @@ object PBKDF2 {
         salt: ByteArray,
         iterationCount: Int,
         keySizeInBits: Int,
-        digest: Digest
+        digest: Digest,
     ): ByteArray {
         val hLen = digest.digest().size
         val blockSize = keySizeInBits / hLen
@@ -49,22 +49,26 @@ object PBKDF2 {
         return result
     }
 
-    private fun hmac(key: ByteArray, data: ByteArray, digest: Digest): ByteArray {
-        var _key = key
+    private fun hmac(
+        key: ByteArray,
+        data: ByteArray,
+        digest: Digest,
+    ): ByteArray {
+        var tempKey = key
         val blockSize = digest.blockSize()
-        if (_key.size > blockSize) {
+        if (tempKey.size > blockSize) {
             digest.reset()
-            digest.update(_key)
-            _key = digest.digest()
+            digest.update(tempKey)
+            tempKey = digest.digest()
         }
-        if (_key.size < blockSize) {
+        if (tempKey.size < blockSize) {
             val newKey = ByteArray(blockSize)
-            _key.copyInto(newKey, 0, 0, _key.size)
-            _key = newKey
+            tempKey.copyInto(newKey, 0, 0, tempKey.size)
+            tempKey = newKey
         }
 
-        val oKeyPad = ByteArray(blockSize) { (0x5c xor _key[it].toInt()).toByte() }
-        val iKeyPad = ByteArray(blockSize) { (0x36 xor _key[it].toInt()).toByte() }
+        val oKeyPad = ByteArray(blockSize) { (0x5c xor tempKey[it].toInt()).toByte() }
+        val iKeyPad = ByteArray(blockSize) { (0x36 xor tempKey[it].toInt()).toByte() }
 
         digest.reset()
         digest.update(iKeyPad)

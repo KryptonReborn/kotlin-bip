@@ -12,7 +12,8 @@ enum class WordCount(val count: Int) {
     COUNT_15(15),
     COUNT_18(18),
     COUNT_21(21),
-    COUNT_24(24);
+    COUNT_24(24),
+    ;
 
     /**
      * The bit length of the entropy necessary to create a mnemonic with the given word count.
@@ -31,7 +32,8 @@ enum class WordCount(val count: Int) {
         }
     }
 
-    fun toEntropy(): ByteArray = ByteArray(bitLength / 8).apply {
-        SecureRandom().nextBytesCopyTo(this)
-    }
+    fun toEntropy(): ByteArray =
+        ByteArray(bitLength / 8).apply {
+            SecureRandom().nextBytesCopyTo(this)
+        }
 }

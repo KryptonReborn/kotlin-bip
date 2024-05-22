@@ -1,12 +1,16 @@
 package dev.kryptonreborn.bip.bip39
 
-import dev.kryptonreborn.bip.bip39.MnemonicException.*
 import dev.kryptonreborn.bip.bip39.WordList.Companion.DEFAULT_LANGUAGE_CODE
-import kotlin.test.*
+import kotlin.test.Test
+import kotlin.test.assertContains
+import kotlin.test.assertContentEquals
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 
 @OptIn(ExperimentalStdlibApi::class)
 class MnemonicTest {
-    private val validPhrase = "void come effort suffer camp survey warrior heavy shoot primary" +
+    private val validPhrase =
+        "void come effort suffer camp survey warrior heavy shoot primary" +
             " clutch crush open amazing screen patrol group space point ten exist slush involve unfold"
 
     private val englishTestData = loadEnglishTestDataJson()
@@ -18,8 +22,9 @@ class MnemonicTest {
         assertEquals(64, seed.size)
         assertEquals(128, hex.length)
         assertEquals(
-            "b873212f885ccffbf4692afcb84bc2e55886de2dfa07d90f5c3c239abc31c0a6ce047e30fd8bf6a281e71389aa82d73df74c7bbfb3b06b4639a5cee775cccd3c",
-            hex
+            "b873212f885ccffbf4692afcb84bc2e55886de2dfa07d90f5c3c239abc31c" +
+                "0a6ce047e30fd8bf6a281e71389aa82d73df74c7bbfb3b06b4639a5cee775cccd3c",
+            hex,
         )
     }
 
@@ -86,7 +91,7 @@ class MnemonicTest {
             assertEquals(
                 it.seed,
                 Mnemonic(it.mnemonic, DEFAULT_LANGUAGE_CODE).toSeed(passphrase)
-                    .toHexString()
+                    .toHexString(),
             )
         }
     }
@@ -94,13 +99,13 @@ class MnemonicTest {
     @Test
     fun testInvalidMnemonicBySwap() {
         val mnemonicPhrase = validPhrase.swap(4, 5)
-        assertFailsWith<ChecksumException> {
+        assertFailsWith<MnemonicException.ChecksumException> {
             Mnemonic(mnemonicPhrase).validate()
         }
-        assertFailsWith<ChecksumException> {
+        assertFailsWith<MnemonicException.ChecksumException> {
             Mnemonic(mnemonicPhrase).toEntropy()
         }
-        assertFailsWith<ChecksumException> {
+        assertFailsWith<MnemonicException.ChecksumException> {
             Mnemonic(mnemonicPhrase).toSeed()
         }
         // toSeed(validate=false) succeeds!!
@@ -113,13 +118,13 @@ class MnemonicTest {
             validPhrase.split(' ').let { words ->
                 validPhrase.replace(words[23], "convincee")
             }
-        assertFailsWith<InvalidWordException> {
+        assertFailsWith<MnemonicException.InvalidWordException> {
             Mnemonic(mnemonicPhrase).validate()
         }
-        assertFailsWith<InvalidWordException> {
+        assertFailsWith<MnemonicException.InvalidWordException> {
             Mnemonic(mnemonicPhrase).toEntropy()
         }
-        assertFailsWith<InvalidWordException> {
+        assertFailsWith<MnemonicException.InvalidWordException> {
             Mnemonic(mnemonicPhrase).toSeed()
         }
         // toSeed(validate=false) succeeds!!
@@ -129,13 +134,13 @@ class MnemonicTest {
     @Test
     fun testInvalidMnemonicWithInvalidNumberOfWords() {
         val mnemonicPhrase = "$validPhrase still"
-        assertFailsWith<WordCountException> {
+        assertFailsWith<MnemonicException.WordCountException> {
             Mnemonic(mnemonicPhrase).validate()
         }
-        assertFailsWith<WordCountException> {
+        assertFailsWith<MnemonicException.WordCountException> {
             Mnemonic(mnemonicPhrase).toEntropy()
         }
-        assertFailsWith<WordCountException> {
+        assertFailsWith<MnemonicException.WordCountException> {
             Mnemonic(mnemonicPhrase).toSeed()
         }
         // toSeed(validate=false) succeeds!!
@@ -182,11 +187,12 @@ class MnemonicTest {
 
         return split(' ').let { words ->
             words.reduceIndexed { i, result, word ->
-                val next = when (i) {
-                    srcWord -> words[destWord]
-                    destWord -> words[srcWord]
-                    else -> word
-                }
+                val next =
+                    when (i) {
+                        srcWord -> words[destWord]
+                        destWord -> words[srcWord]
+                        else -> word
+                    }
                 if (srcWord == 0 && i == 1) "${words[destWord]} $next" else "$result $next"
             }
         }

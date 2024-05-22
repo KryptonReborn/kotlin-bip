@@ -10,12 +10,13 @@ class Pbkdf2Sha512Test {
     @Test
     fun testPbkdf2WithHmacSHA512() {
         pbkdf2TestData.forEach {
-            val result = PBKDF2.pbkdf2WithHmacSHA512(
-                it.password.encodeToByteArray(),
-                it.salt.encodeToByteArray(),
-                it.count,
-                it.length
-            )
+            val result =
+                PBKDF2.pbkdf2WithHmacSHA512(
+                    it.password.encodeToByteArray(),
+                    it.salt.encodeToByteArray(),
+                    it.count,
+                    it.length,
+                )
             assertEquals(it.expected, result.toHexString())
         }
     }
