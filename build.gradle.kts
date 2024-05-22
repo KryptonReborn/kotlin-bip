@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform).apply(false)
     alias(libs.plugins.kotlinPluginSerialization).apply(false)
     alias(libs.plugins.kotlinTestingResource).apply(false)
+    alias(libs.plugins.ktlint).apply(true)
 }
 
 // https://youtrack.jetbrains.com/issue/KT-63014/Running-tests-with-wasmJs-in-1.9.20-requires-Chrome-Canary
