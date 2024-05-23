@@ -7,6 +7,7 @@ kotlinxSerialization = "1.6.3"
 kotlinTestingResource = "0.4.1"
 secureRandom = "0.3.1"
 kotlinCrypto = "0.5.1"
+ktlintVersion = "12.1.1"
 
 [libraries]
 kotlinGradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
@@ -25,6 +26,7 @@ kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref =
 kotlinPluginSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kotlinTestingResource = { id = "com.goncalossilva.resources", version.ref = "kotlinTestingResource" }
 mavenPublish = { id = "maven-publish", version = "unspecified" }
+ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlintVersion" }
 
 # Plugins defined by this project
 commonMppLib = { id = "common.mpp.lib", version = "unspecified" }

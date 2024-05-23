@@ -14,9 +14,10 @@ class Pbkdf2TestDataJson(
 )
 
 fun loadPbkdf2TestDataJson(): List<Pbkdf2TestDataJson> {
-    val json = Json {
-        ignoreUnknownKeys = true
-    }
+    val json =
+        Json {
+            ignoreUnknownKeys = true
+        }
 
     // modified from https://stackoverflow.com/a/19898265/178433
     return json.decodeFromString(Resource("src/commonTest/resources/crypto/pbkdf2_test_data.json").readText())

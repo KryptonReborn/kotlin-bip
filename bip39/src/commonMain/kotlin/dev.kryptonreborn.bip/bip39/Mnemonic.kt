@@ -1,6 +1,5 @@
 package dev.kryptonreborn.bip.bip39
 
-import dev.kryptonreborn.bip.bip39.MnemonicException.*
 import dev.kryptonreborn.bip.bip39.WordList.Companion.DEFAULT_LANGUAGE_CODE
 import dev.kryptonreborn.bip.bip39.WordList.Companion.computeSentence
 import dev.kryptonreborn.bip.bip39.WordList.Companion.getCachedWords
@@ -39,15 +38,16 @@ class Mnemonic(
      * chars can be enough.
      */
     val words: List<CharArray>
-        get() = ArrayList<CharArray>(wordCount).apply {
-            var cursor = 0
-            chars.forEachIndexed { i, c ->
-                if (c == ' ' || i == chars.lastIndex) {
-                    add(chars.copyOfRange(cursor, if (chars[i].isWhitespace()) i else i + 1))
-                    cursor = i + 1
+        get() =
+            ArrayList<CharArray>(wordCount).apply {
+                var cursor = 0
+                chars.forEachIndexed { i, c ->
+                    if (c == ' ' || i == chars.lastIndex) {
+                        add(chars.copyOfRange(cursor, if (chars[i].isWhitespace()) i else i + 1))
+                        cursor = i + 1
+                    }
                 }
             }
-        }
 
     companion object {
         private const val DEFAULT_PASSPHRASE = "mnemonic"
@@ -57,26 +57,27 @@ class Mnemonic(
 
     override fun close() = clear()
 
-    override fun iterator(): Iterator<String> = object : Iterator<String> {
-        var cursor: Int = 0
+    override fun iterator(): Iterator<String> =
+        object : Iterator<String> {
+            var cursor: Int = 0
 
-        override fun hasNext() = cursor < chars.size - 1
+            override fun hasNext() = cursor < chars.size - 1
 
-        override fun next(): String {
-            val nextSpaceIndex = nextSpaceIndex()
-            val word = chars.concatToString(cursor, cursor + (nextSpaceIndex - cursor))
-            cursor = nextSpaceIndex + 1
-            return word
-        }
-
-        private fun nextSpaceIndex(): Int {
-            var i = cursor
-            while (i < chars.size - 1) {
-                if (chars[i].isWhitespace()) return i else i++
+            override fun next(): String {
+                val nextSpaceIndex = nextSpaceIndex()
+                val word = chars.concatToString(cursor, cursor + (nextSpaceIndex - cursor))
+                cursor = nextSpaceIndex + 1
+                return word
             }
-            return chars.size
+
+            private fun nextSpaceIndex(): Int {
+                var i = cursor
+                while (i < chars.size - 1) {
+                    if (chars[i].isWhitespace()) return i else i++
+                }
+                return chars.size
+            }
         }
-    }
 
     fun clear() = chars.fill(0.toChar())
 
@@ -86,7 +87,7 @@ class Mnemonic(
         // verify: word count is supported
         wordCount.let { wordCount ->
             if (WordCount.entries.toTypedArray().none { it.count == wordCount }) {
-                throw WordCountException(wordCount)
+                throw MnemonicException.WordCountException(wordCount)
             }
         }
 
@@ -102,7 +103,7 @@ class Mnemonic(
                 nextLetter = 0
             } else {
                 sublist = sublist.filter { it.length > nextLetter && it[nextLetter] == c }
-                if (sublist.isEmpty()) throw InvalidWordException(i)
+                if (sublist.isEmpty()) throw MnemonicException.InvalidWordException(i)
                 nextLetter++
             }
         }
@@ -121,7 +122,13 @@ class Mnemonic(
      */
     @Suppress("ThrowsCount", "NestedBlockDepth")
     fun toEntropy(): ByteArray {
-        wordCount.let { if (it <= 0 || it % 3 > 0) throw WordCountException(wordCount) }
+        wordCount.let {
+            if (it <= 0 || it % 3 > 0) {
+                throw MnemonicException.WordCountException(
+                    wordCount,
+                )
+            }
+        }
 
         // Look up all the words in the list and construct the
         // concatenation of the original entropy and the checksum.
@@ -137,7 +144,7 @@ class Mnemonic(
         this.forEach {
             words.binarySearch(it).let { phraseIndex ->
                 // fail if the word was not found on the list
-                if (phraseIndex < 0) throw InvalidWordException(it)
+                if (phraseIndex < 0) throw MnemonicException.InvalidWordException(it)
                 // for each of the 11 bits of the phraseIndex
                 (10 downTo 0).forEach { i ->
                     // isolate the next bit (starting from the big end)
@@ -162,7 +169,7 @@ class Mnemonic(
         SHA256().digest(entropy)[0].toBits().let { hashFirstByteBits ->
             repeat(checksumLengthBits) { i ->
                 // failure means that each word was valid BUT they were in the wrong order
-                if (hashFirstByteBits[i] != checksumBits[i]) throw ChecksumException()
+                if (hashFirstByteBits[i] != checksumBits[i]) throw MnemonicException.ChecksumException()
             }
         }
 
@@ -210,8 +217,7 @@ class Mnemonic(
 
 internal fun ByteArray.toBits(): List<Boolean> = flatMap { it.toBits() }
 
-internal fun Byte.toBits(): List<Boolean> =
-    (7 downTo 0).map { (toInt() and (1 shl it)) != 0 }
+internal fun Byte.toBits(): List<Boolean> = (7 downTo 0).map { (toInt() and (1 shl it)) != 0 }
 
 internal fun CharArray.toBytes(): ByteArray {
     return map { it.code.toByte() }.toByteArray()

@@ -32,7 +32,10 @@ data class DerivationPath(
          * @param account The account value to use.
          * @param harden Specify if hardening should be applied to the path element.
          */
-        fun account(account: Int, harden: Boolean): Builder =
+        fun account(
+            account: Int,
+            harden: Boolean,
+        ): Builder =
             apply {
                 require(account >= 0) { "account cannot be negative" }
                 this.account = PathElement.Account(account, harden)
@@ -44,7 +47,10 @@ data class DerivationPath(
          * @param index The index value to use.
          * @param harden Specify if hardening should be applied to the path element.
          */
-        fun index(index: Int, harden: Boolean): Builder =
+        fun index(
+            index: Int,
+            harden: Boolean,
+        ): Builder =
             apply {
                 require(index >= 0) { "index cannot be negative" }
                 this.index = PathElement.Index(index, harden)
@@ -53,13 +59,14 @@ data class DerivationPath(
         /**
          * Construct a new [DerivationPath] instance from this builder.
          */
-        fun build(): DerivationPath = DerivationPath(
-            purpose = existingPath.purpose,
-            coinType = existingPath.coinType,
-            account = this.account ?: existingPath.account,
-            change = existingPath.change,
-            index = this.index ?: existingPath.index
-        )
+        fun build(): DerivationPath =
+            DerivationPath(
+                purpose = existingPath.purpose,
+                coinType = existingPath.coinType,
+                account = this.account ?: existingPath.account,
+                change = existingPath.change,
+                index = this.index ?: existingPath.index,
+            )
     }
 
     /**
