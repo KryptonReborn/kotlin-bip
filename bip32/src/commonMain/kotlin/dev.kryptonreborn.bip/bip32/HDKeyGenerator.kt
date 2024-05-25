@@ -65,7 +65,12 @@ object HDKeyGenerator {
                 publicKey.publicKey = byteArrayOf(0).plus(keyPair.publicKey)
             }
         }
-        return HDAddress(privateKey, publicKey, coinType, MASTER_PATH)
+        return HDAddress(
+            privateKey = privateKey,
+            publicKey = publicKey,
+            coinType = coinType,
+            path = MASTER_PATH
+        )
     }
 
     fun getAddress(parent: HDAddress, child: Long, isHardened: Boolean): HDAddress {
@@ -147,8 +152,10 @@ object HDKeyGenerator {
         }
 
         return HDAddress(
-            privateKey, publicKey, parent.coinType,
-            getPath(parent.path, _child, isHardened)
+            privateKey = privateKey,
+            publicKey = publicKey,
+            coinType = parent.coinType,
+            path = getPath(parent.path, _child, isHardened)
         )
     }
 

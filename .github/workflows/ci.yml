@@ -21,7 +21,7 @@ jobs:
     runs-on: macos-latest
     strategy:
       matrix:
-        module: [ crypto, bip39, bip44 ]
+        module: [ crypto, bip39, bip44, bip32 ]
     steps:
       - uses: actions/checkout@v4
 

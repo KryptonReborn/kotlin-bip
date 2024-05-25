@@ -16,14 +16,13 @@ dependencyResolutionManagement {
             maven {
                 url = uri("https://maven.pkg.github.com/KryptonReborn/$repo")
                 credentials {
-                    username = System.getenv("USERNAME_GITHUB")
-                    password = System.getenv("TOKEN_GITHUB")
+                    username = "token"
+                    password = "92741d83d69acaf1b4a0453ac2686b625e4ae42b"
                 }
             }
         }
 
         mavenGithubRepo("kotlin-ed25519")
-        mavenGithubRepo("kotlin-bech32")
         mavenGithubRepo("kotlin-ecdsa")
 
         maven {
@@ -31,7 +30,7 @@ dependencyResolutionManagement {
             url = uri("https://maven.pkg.github.com/komputing/KHash")
             credentials {
                 username = "token"
-                password = System.getenv("KOMPUTING_KHASH_TOKEN")
+                password = "92741d83d69acaf1b4a0453ac2686b625e4ae42b"
             }
         }
     }
