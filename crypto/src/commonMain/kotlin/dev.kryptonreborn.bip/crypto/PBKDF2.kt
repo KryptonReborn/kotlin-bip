@@ -11,6 +11,13 @@ object PBKDF2 {
         keySizeInBits: Int,
     ): ByteArray = pbkdf2(password, salt, iterationCount, keySizeInBits, SHA512())
 
+    fun hmacSHA512(
+        key: ByteArray,
+        data: ByteArray,
+    ): ByteArray {
+        return hmac(key, data, SHA512())
+    }
+
     private fun pbkdf2(
         password: ByteArray,
         salt: ByteArray,

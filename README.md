@@ -191,3 +191,6 @@ val mnemonic = Mnemonic(WordCount.COUNT_24, languageCode = Locale.ENGLISH.langua
 [bip39](https://github.com/KryptonReborn/kotlin-bip/tree/main/bip39) is inspired by [kotlin-bip39](https://github.com/Electric-Coin-Company/kotlin-bip39/tree/main/bip39-lib/src/commonMain/kotlin/cash/z/ecc/android/bip39) by [Electric Coin Company](https://github.com/Electric-Coin-Company)
 
 [bip44](https://github.com/KryptonReborn/kotlin-bip/tree/main/bip44) is inspired by [hdwallet](https://github.com/FigureTechnologies/hdwallet/tree/main/bip44) by [Figure Technologies Inc.](https://github.com/FigureTechnologies)
+
+[bip32](https://github.com/KryptonReborn/kotlin-bip/tree/main/bip32) is inspired by [BIP32-Ed25519-java](https://github.com/orogvany/BIP32-Ed25519-java/tree/master/src/main/java/com/github/orogvany/bip32) by [orogvany](https://github.com/orogvany)
+
