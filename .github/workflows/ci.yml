@@ -46,7 +46,7 @@ jobs:
         run: ./gradlew :${{ matrix.module }}:build --parallel --build-cache --gradle-user-home ~/.gradle
 
       - name: Archive artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: build-artifacts-${{ matrix.module }}
           path: ${{ matrix.module }}/build/libs/

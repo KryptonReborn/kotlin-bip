@@ -17,6 +17,7 @@ class CommonMppLibPlugin : Plugin<Project> {
                 apply(libs.findPlugin("kotlinMultiplatform").get().get().pluginId)
                 apply(libs.findPlugin("kotlinPluginSerialization").get().get().pluginId)
                 apply(libs.findPlugin("kotlinTestingResource").get().get().pluginId)
+                apply(libs.findPlugin("dokka").get().get().pluginId)
             }
 
             extensions.configure<LibraryExtension> {
