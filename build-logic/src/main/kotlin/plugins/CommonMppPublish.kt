@@ -24,6 +24,7 @@ class CommonMppPublish : Plugin<Project> {
                 apply(libs.findPlugin("mavenPublish").get().get().pluginId)
                 apply(libs.findPlugin("ktlint").get().get().pluginId)
             }
+
             afterEvaluate {
                 configure<PublishingExtension> {
                     repositories {

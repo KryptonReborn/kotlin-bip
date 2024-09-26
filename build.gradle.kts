@@ -9,6 +9,12 @@ plugins {
     alias(libs.plugins.kotlinPluginSerialization).apply(false)
     alias(libs.plugins.kotlinTestingResource).apply(false)
     alias(libs.plugins.ktlint).apply(true)
+    alias(libs.plugins.dokka).apply(true)
+    alias(libs.plugins.kover).apply(false)
+}
+
+subprojects {
+    apply(plugin = "org.jetbrains.dokka")
 }
 
 // https://youtrack.jetbrains.com/issue/KT-63014/Running-tests-with-wasmJs-in-1.9.20-requires-Chrome-Canary
@@ -21,4 +27,8 @@ plugins.withType<NodeJsRootPlugin> {
     tasks.withType<KotlinNpmInstallTask>().configureEach {
         args.add("--ignore-engines")
     }
+}
+
+tasks.dokkaHtmlMultiModule {
+    outputDirectory.set(layout.buildDirectory.dir("dokkaCustomMultiModuleOutput"))
 }

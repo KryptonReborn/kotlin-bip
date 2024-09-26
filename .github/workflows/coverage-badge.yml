@@ -1,0 +1,53 @@
+name: Create coverage badge
+
+on:
+  push:
+    branches: [ main ]
+
+env:
+  JAVA_VERSION: '17'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Generate coverage output for all modules
+        run: |
+          MODULES=("bip39" "bip44" "crypto")
+          TOTAL_COVERAGE=0
+          MODULE_COUNT=${#MODULES[@]}
+          
+          for MODULE in "${MODULES[@]}"; do
+            COVERAGE=$(./gradlew -q :$MODULE:printLineCoverage | tail -n 1)
+            TOTAL_COVERAGE=$(echo "$TOTAL_COVERAGE + $COVERAGE" | bc)
+          done
+          
+          AVERAGE_COVERAGE=$(echo "scale=2; $TOTAL_COVERAGE / $MODULE_COUNT" | bc)
+          echo "AVERAGE_COVERAGE=$AVERAGE_COVERAGE" >> $GITHUB_ENV
+
+      - name: Print average coverage
+        run: |
+          echo "Average Coverage: ${{ env.AVERAGE_COVERAGE }}%"
+      - name: Update dynamic badge gist
+        uses: schneegans/dynamic-badges-action@v1.7.0
+        with:
+          auth: ${{secrets.GH_GIST_TOKEN}}
+          gistID: 80bcc643522fc574144cb35911894d21
+          filename: kotlin-bip-coverage-badge.json
+          label: coverage
+          message: ${{env.AVERAGE_COVERAGE}}%
+          valColorRange: ${{env.AVERAGE_COVERAGE}}
+          minColorRange: 0
+          maxColorRange: 100
