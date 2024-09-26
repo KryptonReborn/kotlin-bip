@@ -2,10 +2,10 @@ package plugins
 
 import com.android.build.gradle.LibraryExtension
 import extensions.libs
+import extensions.registerPrintLineCoverageTask
 import org.gradle.api.*
 import org.gradle.kotlin.dsl.*
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
-import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsSubTargetDsl
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsTargetDsl
 
@@ -18,7 +18,10 @@ class CommonMppLibPlugin : Plugin<Project> {
                 apply(libs.findPlugin("kotlinPluginSerialization").get().get().pluginId)
                 apply(libs.findPlugin("kotlinTestingResource").get().get().pluginId)
                 apply(libs.findPlugin("dokka").get().get().pluginId)
+                apply(libs.findPlugin("kover").get().get().pluginId)
             }
+
+            registerPrintLineCoverageTask()
 
             extensions.configure<LibraryExtension> {
                 compileSdk = libs.findVersion("androidCompileSdk").get().displayName.toInt()

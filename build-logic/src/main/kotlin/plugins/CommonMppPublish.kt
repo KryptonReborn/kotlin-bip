@@ -1,7 +1,6 @@
 package plugins
 
 import extensions.libs
-import extensions.registerPrintLineCoverageTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.publish.PublishingExtension
@@ -24,9 +23,8 @@ class CommonMppPublish : Plugin<Project> {
             with(pluginManager) {
                 apply(libs.findPlugin("mavenPublish").get().get().pluginId)
                 apply(libs.findPlugin("ktlint").get().get().pluginId)
-                apply(libs.findPlugin("kover").get().get().pluginId)
             }
-            registerPrintLineCoverageTask()
+
             afterEvaluate {
                 configure<PublishingExtension> {
                     repositories {
